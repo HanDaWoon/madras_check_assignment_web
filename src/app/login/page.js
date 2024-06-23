@@ -1,42 +1,45 @@
 "use client";
-import { useState } from "react";
+
 import { mFetch } from "@/util/MFetch";
 
-const login = () => {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = (e) => {
+const LoginPage = () => {
+  const login = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    mFetch("/user", {
-      headers: {
-        Authorization:
-          "Basic " + btoa(e.target.email.value + ":" + e.target.password.value),
-      },
-      credentials: "include",
+    // mFetch("/user", {
+    //   credentials: "include",
+    //   headers: {
+    //     Authorization:
+    //       "Basic " + btoa(`${e.target.email.value}:${e.target.password.value}`),
+    //   },
+    // })
+    fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: e.target.email.value,
+        password: e.target.password.value,
+      }),
     })
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
-          console.log(res.headers.getSetCookie());
-          return res.json();
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          throw new Error("Invalid credentials");
         }
-        throw new Error("Login Failed");
       })
-      .then((res) => {
-        sessionStorage.setItem("userDetail", JSON.stringify(res.data));
+      .then((data) => {
+        window.location.href = "/";
       })
-      .catch((err) => {
-        setIsLoading(false);
-        console.log(err);
+      .catch((error) => {
+        console.error("Error:", error);
       });
   };
+
   return (
     <div className="bg-gray-100">
       <div className="flex justify-center h-screen w-screen items-center">
         <form
+          onSubmit={login}
           className="w-full md:w-1/3 flex flex-col items-center"
-          onSubmit={handleSubmit}
         >
           <h1 className="text-center text-2xl font-bold text-gray-600 mb-6">
             LOGIN
@@ -64,7 +67,7 @@ const login = () => {
               type="submit"
               className="py-4 bg-blue-400 w-full rounded text-blue-50 font-bold hover:bg-blue-700"
             >
-              {!isLoading ? "Login" : "Loading..."}
+              Login
             </button>
           </div>
         </form>
@@ -72,4 +75,5 @@ const login = () => {
     </div>
   );
 };
-export default login;
+
+export default LoginPage;
