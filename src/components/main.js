@@ -22,7 +22,6 @@ const Home = () => {
   });
   const [ipAccessList, setIpAccessList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleOpenModal = () => {
     setOpenModal(true);
@@ -38,7 +37,7 @@ const Home = () => {
       setPagination(data.pagination);
       setIpAccessList(data.ipAccessList);
     } catch (error) {
-      setError(error);
+      alert(error);
     } finally {
       setLoading(false);
     }
