@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { mFetch } from "@/util/MFetch";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
-import { Input } from "postcss";
 
 const Home = () => {
   const [openModal, setOpenModal] = useState(true);
