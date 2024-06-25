@@ -16,6 +16,14 @@ export function LoginForm() {
       <h1 className="text-center text-2xl font-bold text-gray-600 mb-6">
         LOGIN
       </h1>
+      <h2 className="mb-6">
+        Example User
+        <br />
+        email: admin@example.com
+        <br />
+        password: 12345
+        <br />
+      </h2>
       <div className="w-3/4 mb-6">
         <input
           type="email"
