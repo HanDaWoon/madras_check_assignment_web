@@ -2,7 +2,7 @@
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { useEffect, useState } from "react";
 import { mFetch } from "@/util/mFetch";
-import { localDateTimeToUtcIso } from "@/util/dateHandling";
+import { dateTimeFormatIso } from "@/util/dateHandling";
 
 const AddIpModal = ({ openModal, setOpenModal, fetchIpAccessList }) => {
   const [ip, setIp] = useState("");
@@ -27,8 +27,8 @@ const AddIpModal = ({ openModal, setOpenModal, fetchIpAccessList }) => {
       body: JSON.stringify({
         ipAddress: ip,
         memo: memo,
-        startDate: localDateTimeToUtcIso(startDate),
-        endDate: localDateTimeToUtcIso(endDate),
+        startDate: dateTimeFormatIso(startDate),
+        endDate: dateTimeFormatIso(endDate),
       }),
     })
       .then((res) => {
@@ -36,7 +36,6 @@ const AddIpModal = ({ openModal, setOpenModal, fetchIpAccessList }) => {
           fetchIpAccessList();
           onCloseModal();
           return;
-          2;
         }
         throw new Error("IP 추가에 실패했습니다.");
       })

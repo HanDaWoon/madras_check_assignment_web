@@ -1,7 +1,9 @@
-export const localDateTimeToUtcIso = (localDateTime) => {
+export const dateTimeFormatIso = (localDateTime) => {
   const localDate = new Date(localDateTime);
-  const utcDate = new Date(
-    localDate.getTime() - localDate.getTimezoneOffset() * 60000,
-  );
-  return utcDate.toISOString();
+  return localDate.toISOString();
+};
+
+export const dateTimeStringToLocalDateTime = (dateTimeString) => {
+  const dateTime = new Date(dateTimeString);
+  return dateTime.toLocaleString();
 };

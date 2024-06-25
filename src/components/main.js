@@ -4,7 +4,10 @@ import { mFetch } from "@/util/mFetch";
 import AddIpModal from "@/components/addIp";
 import { Button, Label, Pagination, Select, TextInput } from "flowbite-react";
 import { IoSearchSharp } from "react-icons/io5";
-import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
+import {
+  dateTimeFormatIso,
+  dateTimeStringToLocalDateTime,
+} from "@/util/dateHandling";
 
 const Home = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -24,7 +27,6 @@ const Home = () => {
     },
   });
   const [ipAccessList, setIpAccessList] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [searchParam, setSearchParam] = useState({
     memo: "",
     startDate: "",
@@ -37,8 +39,23 @@ const Home = () => {
     setOpenModal(true);
   };
 
+  const handleSearchParamChange = (e) => {
+    e.preventDefault();
+    const { id, value } = e.target;
+    setSearchParam({ ...searchParam, [id]: value });
+  };
+
+  const resetSearchParam = () => {
+    setSearchParam({
+      memo: "",
+      startDate: "",
+      endDate: "",
+      page: 1,
+      recordSize: 10,
+    });
+  };
+
   const fetchIpAccessList = async () => {
-    setLoading(true);
     const urlSearchParams = new URLSearchParams();
 
     urlSearchParams.append("page", searchParam.page);
@@ -48,7 +65,10 @@ const Home = () => {
       urlSearchParams.append("memo", searchParam.memo);
     }
     if (searchParam.startDate) {
-      urlSearchParams.append("startDate", searchParam.startDate);
+      urlSearchParams.append(
+        "startDate",
+        dateTimeFormatIso(searchParam.startDate),
+      );
     }
     if (searchParam.endDate) {
       urlSearchParams.append("endDate", searchParam.endDate);
@@ -66,8 +86,6 @@ const Home = () => {
       setIpAccessList(data.ipAccessList);
     } catch (error) {
       alert(error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,26 +102,32 @@ const Home = () => {
           <div className="flex justify-end items-end gap-4">
             <Label htmlFor="search_memo" className="text-xs font-medium">
               <TextInput
-                id="search_memo"
+                id="memo"
                 className="text-xs font-medium"
                 type="text"
                 icon={IoSearchSharp}
+                value={searchParam.memo}
+                onChange={(e) => handleSearchParamChange(e)}
               />
             </Label>
             <Label htmlFor="search_start_date" className="text-xs font-medium">
               사용 시작 시간
               <TextInput
-                id="search_start_date"
+                id="startDate"
                 className="text-xs font-medium"
                 type="datetime-local"
+                value={searchParam.startDate}
+                onChange={(e) => handleSearchParamChange(e)}
               />
             </Label>
             <Label htmlFor="search_end_date" className="text-xs font-medium">
               사용 끝 시간
               <TextInput
-                id="search_end_date"
+                id="endDate"
                 className="text-xs font-medium"
                 type="datetime-local"
+                value={searchParam.endDate}
+                onChange={(e) => handleSearchParamChange(e)}
               />
             </Label>
             <Label htmlFor="record_size" className="text-xs font-medium">
@@ -127,19 +151,17 @@ const Home = () => {
                 <option value="30">30</option>
               </Select>
             </Label>
+            <Button onClick={resetSearchParam}>초기화</Button>
           </div>
           <div className="flex items-center gap-x-3">
-            <button
-              onClick={handleOpenModal}
-              className="flex items-center justify-center px-5 py-2 text-sm tracking-wide text-white transition-colors duration-200 bg-blue-500 rounded-lg shrink-0 w-auto gap-x-2 hover:bg-blue-600"
-            >
+            <Button onClick={handleOpenModal} color="purple">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth="1.5"
                 stroke="currentColor"
-                className="w-5 h-5"
+                className="w-5 h-5 mr-2"
               >
                 <path
                   strokeLinecap="round"
@@ -147,9 +169,8 @@ const Home = () => {
                   d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-
-              <span>IP 추가</span>
-            </button>
+              IP 추가
+            </Button>
           </div>
         </div>
 
@@ -190,35 +211,22 @@ const Home = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 max-h-[70vh]">
-                    {loading ? (
-                      <tr>
-                        <td
-                          className="px-4 py-4 text-sm whitespace-nowrap"
-                          colSpan="4"
-                        >
-                          <div className="flex items-center justify-center">
-                            <div className="w-8 h-8 border-t-2 border-b-2 border-gray-800 rounded-full animate-spin"></div>
-                          </div>
+                    {ipAccessList.map((ipAccess) => (
+                      <tr key={ipAccess.id}>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          {ipAccess.ipAddress}
+                        </td>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          {ipAccess.memo}
+                        </td>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          {dateTimeStringToLocalDateTime(ipAccess.startDate)}
+                        </td>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          {dateTimeStringToLocalDateTime(ipAccess.endDate)}
                         </td>
                       </tr>
-                    ) : (
-                      ipAccessList.map((ipAccess) => (
-                        <tr key={ipAccess.id}>
-                          <td className="px-4 py-4 text-sm whitespace-nowrap">
-                            {ipAccess.ipAddress}
-                          </td>
-                          <td className="px-4 py-4 text-sm whitespace-nowrap">
-                            {ipAccess.memo}
-                          </td>
-                          <td className="px-4 py-4 text-sm whitespace-nowrap">
-                            {ipAccess.startDate}
-                          </td>
-                          <td className="px-4 py-4 text-sm whitespace-nowrap">
-                            {ipAccess.endDate}
-                          </td>
-                        </tr>
-                      ))
-                    )}
+                    ))}
                   </tbody>
                 </table>
               </div>
