@@ -39,6 +39,20 @@ const Home = () => {
     setOpenModal(true);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await mFetch(`/ip-access/${id}`, {
+        credentials: "include",
+        method: "DELETE",
+      });
+      if (response.ok) {
+        await fetchIpAccessList();
+      }
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   const handleSearchParamChange = (e) => {
     e.preventDefault();
     const { id, value } = e.target;
@@ -183,34 +197,34 @@ const Home = () => {
                     <tr>
                       <th
                         scope="col"
-                        className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        className="py-3.5 px-4 text-sm font-normal text-left text-gray-500"
                       >
                         IP 주소
                       </th>
 
                       <th
                         scope="col"
-                        className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        className="px-4 py-3.5 text-sm font-normal text-left text-gray-500"
                       >
                         내용
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        className="px-4 py-3.5 text-sm font-normal text-left text-gray-500"
                       >
                         사용 시작 시간
                       </th>
 
                       <th
                         scope="col"
-                        className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400"
+                        className="px-4 py-3.5 text-sm font-normal text-left text-gray-500"
                       >
                         사용 끝 시간
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900 max-h-[70vh]">
+                  <tbody className="bg-white divide-y divide-gray-200 max-h-[70vh]">
                     {ipAccessList.map((ipAccess) => (
                       <tr key={ipAccess.id}>
                         <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -222,8 +236,16 @@ const Home = () => {
                         <td className="px-4 py-4 text-sm whitespace-nowrap">
                           {dateTimeStringToLocalDateTime(ipAccess.startDate)}
                         </td>
-                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                        <td className="px-4 py-4 text-sm whitespace-nowrap flex justify-between items-center">
                           {dateTimeStringToLocalDateTime(ipAccess.endDate)}
+                          <Button
+                            size="xs"
+                            color="red"
+                            className="mr-20"
+                            onClick={() => handleDelete(ipAccess.id)}
+                          >
+                            Delete
+                          </Button>
                         </td>
                       </tr>
                     ))}

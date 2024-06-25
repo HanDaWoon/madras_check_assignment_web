@@ -5,5 +5,5 @@ export const dateTimeFormatIso = (localDateTime) => {
 
 export const dateTimeStringToLocalDateTime = (dateTimeString) => {
   const dateTime = new Date(dateTimeString);
-  return dateTime.toLocaleString();
+  return dateTime.toLocaleString().slice(0, -3);
 };
