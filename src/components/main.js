@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { mFetch } from "@/util/MFetch";
+import { mFetch } from "@/util/mFetch";
 import AddIpModal from "@/components/addIp";
 import { Button, Label, Pagination, Select, TextInput } from "flowbite-react";
 import { IoSearchSharp } from "react-icons/io5";

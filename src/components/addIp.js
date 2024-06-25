@@ -1,7 +1,7 @@
 "use client";
 import { Button, Label, Modal, TextInput } from "flowbite-react";
 import { useEffect, useState } from "react";
-import { mFetch } from "@/util/MFetch";
+import { mFetch } from "@/util/mFetch";
 
 const AddIpModal = ({ openModal, setOpenModal, fetchIpAccessList }) => {
   const [ip, setIp] = useState("");
