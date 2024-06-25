@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import { mFetch } from "@/util/MFetch";
 import AddIpModal from "@/components/addIp";
-import { Label, Select, TextInput } from "flowbite-react";
+import { Button, Label, Pagination, Select, TextInput } from "flowbite-react";
 import { IoSearchSharp } from "react-icons/io5";
+import { HiOutlineArrowLeft, HiOutlineArrowRight } from "react-icons/hi";
 
 const Home = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -38,12 +39,28 @@ const Home = () => {
 
   const fetchIpAccessList = async () => {
     setLoading(true);
-    const url = "/ip-access";
+    const urlSearchParams = new URLSearchParams();
+
+    urlSearchParams.append("page", searchParam.page);
+    urlSearchParams.append("recordSize", searchParam.recordSize);
+
+    if (searchParam.memo) {
+      urlSearchParams.append("memo", searchParam.memo);
+    }
+    if (searchParam.startDate) {
+      urlSearchParams.append("startDate", searchParam.startDate);
+    }
+    if (searchParam.endDate) {
+      urlSearchParams.append("endDate", searchParam.endDate);
+    }
 
     try {
-      const response = await mFetch(url, {
-        credentials: "include",
-      });
+      const response = await mFetch(
+        "/ip-access?" + urlSearchParams.toString(),
+        {
+          credentials: "include",
+        },
+      );
       const { data } = await response.json();
       setPagination(data.pagination);
       setIpAccessList(data.ipAccessList);
@@ -56,7 +73,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchIpAccessList().then((r) => r);
-  }, []);
+  }, [searchParam]);
 
   return (
     <div>
@@ -91,7 +108,18 @@ const Home = () => {
             </Label>
             <Label htmlFor="record_size" className="text-xs font-medium">
               리스트 개수
-              <Select id="record_size" required>
+              <Select
+                id="record_size"
+                value={searchParam.recordSize}
+                onChange={(e) =>
+                  setSearchParam({
+                    ...searchParam,
+                    page: 1,
+                    recordSize: e.target.value,
+                  })
+                }
+                required
+              >
                 <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
@@ -126,10 +154,10 @@ const Home = () => {
         </div>
 
         <div className="flex flex-col mt-3">
-          <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <div className="-mx-8 overflow-x-auto">
+            <div className="inline-block min-w-full align-middle px-8">
+              <div className="overflow-hidden border border-gray-200 rounded-lg">
+                <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50 dark:bg-gray-800">
                     <tr>
                       <th
@@ -198,59 +226,13 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="mt-6 sm:flex sm:items-center sm:justify-between ">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            Page{" "}
-            <span className="font-medium text-gray-700 dark:text-gray-100">
-              {`${pagination.paginationParam.page} of ${pagination.totalPageCount}`}
-            </span>
-          </div>
-
-          <div className="flex items-center mt-4 gap-x-4 sm:mt-0">
-            <a
-              href="#"
-              className="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 rtl:-scale-x-100"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
-                />
-              </svg>
-
-              <span>previous</span>
-            </a>
-
-            <a
-              href="#"
-              className="flex items-center justify-center w-1/2 px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md sm:w-auto gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800"
-            >
-              <span>Next</span>
-
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-5 h-5 rtl:-scale-x-100"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                />
-              </svg>
-            </a>
-          </div>
+        <div className="mt-2 mb-4 flex overflow-x-auto items-center justify-center">
+          <Pagination
+            currentPage={pagination.paginationParam.page}
+            totalPages={pagination.totalPageCount}
+            onPageChange={(page) => setSearchParam({ ...searchParam, page })}
+            showIcons
+          />
         </div>
       </section>
 
