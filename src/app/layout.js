@@ -4,8 +4,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "MidrasCheck Admin Page",
-  description: "Admin page for MidrasCheck assignment",
+  title: "MadrasCheck Admin Page",
+  description: "Admin page for MadrasCheck assignment",
 };
 
 export default function RootLayout({ children }) {
